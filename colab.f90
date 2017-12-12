@@ -43,14 +43,16 @@ Program temp
         Do i=1,Np
            Call Random_number(u)
            Call Random_number(v)
-           sigma=Sqrt(-2.*Log(1-u))*Cos(2*pi*v)
-           Tab_Ep(i)=1./(1+2*dt/tau)*(Tab_Ep(i)+R*T*dt/tau*(1+sigma**2)+2*sigma*Sqrt(dt/tau*R*T*Tab_Ep(i)))
+           sigma=(-2.*Log(1-u))**(1/2)*Cos(2*pi*v)
+           Tab_Ep(i)=1./(1+2*dt/tau)*(Tab_Ep(i)+R*T*dt/tau*(1+sigma**2)+2*sigma*(dt/tau*R*T*Tab_Ep(i)))**(1/2)
            Tab_Tint(n)=Tab_Tint(n)+Tab_Ep(i)
         End Do
-        Tab_Tint(n)=Tab_Tint(n)/Np
-        Write(1,'(1I5,a,1F9.2)')n,' ',Tab_Tint(n)
+        !Tab_Tint(n)=Tab_Tint(n)/Np
      End Do
-  Close(1)
+     Do n=2,Nfin+1
+        Write(1,'(1I5,a,1F9.2)')n,' ',Tab_Tint(n)/Np
+     end Do
+     Close(1)
   !end timer
   call cpu_time(finish)
    print '("Time = ",f6.3," seconds.")',finish-start
