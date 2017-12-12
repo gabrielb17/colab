@@ -43,17 +43,17 @@ Program temp
      c=dt/tau*R*T
      
      !calcul des sigmas
-        Do i=1,Np/2
+ 
+
+     !Entre t et t+dt
+     Do n=2,Nfin+1
+          Do i=1,Np/2
            Call Random_number(u)
            Call Random_number(v)
            cst=SQRT(-2.*Log(1-u))
            sigma(i)=cst*Cos(a*v)
            sigma(i+Np/2)=cst*sin(a*v)
         enddo
-     
-
-     !Entre t et t+dt
-     Do n=2,Nfin+1
         Do i=1,Np
            Tab_Ep(i)=b*(Tab_Ep(i)+c*(1+sigma(i)**2)+2*sigma(i)*SQRT(c*Tab_Ep(i)))
            Tab_Tint(n)=Tab_Tint(n)+Tab_Ep(i)
