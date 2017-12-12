@@ -4,10 +4,10 @@ Program temp
   !Variables
   Integer:: i,n,Nfin
   Integer, parameter::Np=100000
-  Real*8,Dimension(Np)::Tab_Ep
+  Real*8,Dimension(Np)::Tab_Ep,sigma
   Real*8,Dimension(100)::Hist
   Real*8,Dimension(:),Allocatable::Tab_Tint
-  Real*8::tau,dt,T,R,sigma,u,v
+  Real*8::tau,dt,T,R,u,v,a,b,c,cst
   Real*8,Parameter::pi=3.1415927
   real :: start, finish
 
@@ -30,21 +30,32 @@ Program temp
         Call Random_number(Tab_Ep(i))
         Tab_Ep(i)=Tab_Ep(i)*100000.+(1-Tab_Ep(i))*200000.
      End Do
-	       !Calcul Tint
+     !Calcul Tint
      Tab_Tint=0.
      Do i=1,Np
         Tab_Tint(1)=Tab_Ep(i)+Tab_Tint(1)
      End Do
      Tab_Tint(1)=Tab_Tint(1)/Np
      Write(1,'(1I5,a,1F9.2)')1,' ',Tab_Tint(1)
+     !constantes
+     a=2*pi
+     b=1./(1+2*dt/tau)
+     c=dt/tau*R*T
+     
+     !calcul des sigmas
+        Do i=1,Np/2
+           Call Random_number(u)
+           Call Random_number(v)
+           cst=SQRT(-2.*Log(1-u))
+           sigma(i)=cst*Cos(a*v)
+           sigma(i+Np/2)=cst*sin(a*v)
+        enddo
+     
 
      !Entre t et t+dt
      Do n=2,Nfin+1
         Do i=1,Np
-           Call Random_number(u)
-           Call Random_number(v)
-           sigma=(-2.*Log(1-u))**(1/2)*Cos(2*pi*v)
-           Tab_Ep(i)=1./(1+2*dt/tau)*(Tab_Ep(i)+R*T*dt/tau*(1+sigma**2)+2*sigma*(dt/tau*R*T*Tab_Ep(i)))**(1/2)
+           Tab_Ep(i)=b*(Tab_Ep(i)+c*(1+sigma(i)**2)+2*sigma(i)*SQRT(c*Tab_Ep(i)))
            Tab_Tint(n)=Tab_Tint(n)+Tab_Ep(i)
         End Do
         !Tab_Tint(n)=Tab_Tint(n)/Np
